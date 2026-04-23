@@ -22,13 +22,13 @@
       { id: 2, name: '四本足！', requiredXp: 350, desc: '前足も生えてカエルに近づいた！' },
       { id: 3, name: 'しっぽカエル', requiredXp: 600, desc: '顔がカエルになってきた！' },
       // --- 最終形態（7パターン） rankでスクショの装飾が変わる ---
-      { id: 4, name: '立派なカエル', requiredXp: 1000, desc: '王道！完璧な育成の証。', textColor: 'text-green-600', rank: 'good' },
-      { id: 5, name: 'ツッパリガエル', requiredXp: 1000, desc: 'お世話サボりでグレちゃった…', textColor: 'text-purple-600', rank: 'bad' },
-      { id: 6, name: 'デブガエル', requiredXp: 1000, desc: '無理やり食べ過ぎてまん丸に！', textColor: 'text-orange-600', rank: 'bad' },
-      { id: 7, name: 'マッチョガエル', requiredXp: 1000, desc: '疲労限界まで遊んだ結果、超ムキムキに！', textColor: 'text-red-600', rank: 'good' },
-      { id: 8, name: '仙人ガエル', requiredXp: 1000, desc: '寝てばかりで悟りを開いた。', textColor: 'text-gray-600', rank: 'normal' },
-      { id: 9, name: 'アイドルガエル', requiredXp: 1000, desc: '歌の力で目覚めたスター！', textColor: 'text-pink-500', rank: 'good' },
-      { id: 10, name: '宇宙ガエル', requiredXp: 1000, desc: '故郷の星へ帰っていった…', textColor: 'text-blue-500', rank: 'good' },
+      { id: 4, name: '立派なカエル', requiredXp: 1000, desc: '王道！完璧な育成の証。', episode: 'バランスよくお世話をされた、オタマジャクシの理想の姿。\nジャンプ力と歌声は沼で一番を誇るという。', textColor: 'text-green-600', rank: 'good' },
+      { id: 5, name: 'ツッパリガエル', requiredXp: 1000, desc: 'お世話サボりでグレちゃった…', episode: 'お世話をサボられた怒りから、グレてしまった悲しき姿。\n夜な夜な水槽の中で、バイクの排気音のような鳴き声で威嚇する。', textColor: 'text-purple-600', rank: 'bad' },
+      { id: 6, name: 'デブガエル', requiredXp: 1000, desc: '無理やり食べ過ぎてまん丸に！', episode: '限界を超えて食べ続けた結果、まん丸ボディを手に入れた。\n動くのが面倒なので、エサが口に飛び込んでくるのを待っている。', textColor: 'text-orange-600', rank: 'bad' },
+      { id: 7, name: 'マッチョガエル', requiredXp: 1000, desc: '疲労限界まで遊んだ結果、超ムキムキに！', episode: '過労で倒れるまで遊び（トレーニングし）続けた結果、超ムキムキに。\n沼の平和を守るため、今日も筋トレを欠かさない。', textColor: 'text-red-600', rank: 'good' },
+      { id: 8, name: '仙人ガエル', requiredXp: 1000, desc: '寝てばかりで悟りを開いた。', episode: 'ひたすら眠り続けた結果、ついにカエルの域を超えて悟りを開いた。\n空中をわずかに浮遊し、ありがたい言葉を鳴き声で伝える。', textColor: 'text-gray-600', rank: 'normal' },
+      { id: 9, name: 'アイドルガエル', requiredXp: 1000, desc: '歌の力で目覚めたスター！', episode: '歌うことの喜びに目覚め、沼のトップアイドルとしてデビューした。\nピンクのオーラを放ち、熱狂的なファン（オタマ）を抱える。', textColor: 'text-pink-500', rank: 'good' },
+      { id: 10, name: '宇宙ガエル', requiredXp: 1000, desc: '故郷の星へ帰っていった…', episode: '歌と遊びの波動が宇宙に届き、隠された本来の姿を取り戻した。\n「地球人ヨ、アリガトウ」と言い残し、故郷の星へ帰っていく。', textColor: 'text-blue-500', rank: 'good' },
     ];
 
     const FOODS = [
@@ -257,7 +257,7 @@
     };
 
     function App() {
-      const [phase, setPhase] = useState('title'); // title, main, evolution, minigame, result
+      const [phase, setPhase] = useState('title'); // title, catalog, main, evolution, minigame, result
       const [stats, setStats] = useState({ full: 100, mood: 100, clean: 100, fatigue: 0, weight: 50, xp: 0 });
       const [counts, setCounts] = useState({ play: 0, sleep: 0, sing: 0, badCare: 0 });
       const [stageIdx, setStageIdx] = useState(0);
@@ -521,13 +521,49 @@
                   <div className="flex justify-center my-4 h-32 md:h-40">
                     <OtamajacksonSVG stageIdx={0} anim="idle" stats={stats} badCareCount={0} />
                   </div>
-                  <p className="text-gray-700 font-bold mb-6 text-xs md:text-sm text-left bg-blue-50 p-4 rounded-xl leading-relaxed">
+                  <p className="text-gray-700 font-bold mb-4 text-xs md:text-sm text-left bg-blue-50 p-4 rounded-xl leading-relaxed">
                     🍚ごはん 🧽そうじ 🎮あそぶ 💤やすむ 🎵うたう<br/>
                     お世話の仕方によって<span className="text-red-500 text-sm">全7種類の最終形態</span>に進化！<br/>
                     メーターが一杯でも無理やりお世話できます。<br/>放置したり限界突破させると変な姿になるかも…？
                   </p>
-                  <button onClick={() => setPhase('main')} className="w-full bg-green-500 hover:bg-green-600 text-white text-xl font-black py-4 rounded-full shadow-[0_6px_0_#166534] active:translate-y-[6px] active:shadow-none transition-all">
+                  <button onClick={() => setPhase('main')} className="w-full bg-green-500 hover:bg-green-600 text-white text-xl font-black py-4 rounded-full shadow-[0_6px_0_#166534] active:translate-y-[6px] active:shadow-none transition-all mb-3">
                     育成スタート！
+                  </button>
+                  <button onClick={() => setPhase('catalog')} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold py-3 rounded-full shadow-[0_4px_0_#312e81] active:translate-y-[4px] active:shadow-none transition-all">
+                    📖 最終形態カタログを見る
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* 最終形態カタログ画面 */}
+            {phase === 'catalog' && (
+              <div className="flex-1 flex flex-col bg-gradient-to-b from-indigo-100 to-indigo-300 p-4 absolute inset-0 z-50 overflow-y-auto">
+                <div className="bg-white/95 p-4 md:p-6 rounded-3xl shadow-2xl text-center w-full max-w-md mx-auto border-4 border-indigo-400 my-4">
+                  <h2 className="text-2xl md:text-3xl font-black text-indigo-700 mb-2">最終形態カタログ</h2>
+                  <p className="text-xs md:text-sm font-bold text-gray-600 mb-6 bg-indigo-50 py-2 rounded-lg">全7種類の進化パターンを一挙公開！</p>
+                  
+                  <div className="space-y-6 text-left">
+                    {STAGES.filter(s => s.id >= 4).map(stage => (
+                      <div key={stage.id} className={`border-4 rounded-2xl p-4 bg-gray-50 flex flex-col items-center relative overflow-hidden ${stage.borderColor || 'border-gray-300'}`}>
+                        <h3 className={`text-xl md:text-2xl font-black mb-2 relative z-10 ${stage.textColor}`}>{stage.name}</h3>
+                        <div className="w-32 h-32 mb-4 bg-white rounded-xl shadow-inner border-2 border-gray-200 relative z-10 flex justify-center items-center">
+                           <OtamajacksonSVG stageIdx={stage.id} anim="idle" stats={{fatigue:0, weight:50}} badCareCount={0} />
+                        </div>
+                        <p className="text-sm font-black text-gray-800 mb-3 border-l-4 border-indigo-400 pl-2 relative z-10">
+                          {stage.desc}
+                        </p>
+                        <div className="text-xs md:text-sm font-bold text-gray-700 bg-gray-200 p-3 rounded-lg w-full leading-relaxed relative z-10">
+                          {stage.episode.split('\n').map((line, i) => <span key={i}>{line}<br/></span>)}
+                        </div>
+                        {/* 背景装飾 */}
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/50 to-transparent pointer-events-none"></div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <button onClick={() => setPhase('title')} className="w-full bg-gray-500 hover:bg-gray-600 text-white text-lg font-black py-4 mt-8 mb-4 rounded-full shadow-[0_4px_0_#374151] active:translate-y-[4px] active:shadow-none transition-all">
+                    タイトルへもどる
                   </button>
                 </div>
               </div>
