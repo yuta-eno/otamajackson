@@ -17,18 +17,18 @@
     const { useState, useEffect, useRef } = React;
 
     const STAGES = [
-      { id: 0, name: 'オタマジャクシ', requiredXp: 0 },
-      { id: 1, name: '後脚はえた！', requiredXp: 150 },
-      { id: 2, name: '四本足！', requiredXp: 350 },
-      { id: 3, name: 'しっぽカエル', requiredXp: 600 },
-      // --- ここから最終形態（7パターン） ---
-      { id: 4, name: '立派なカエル', desc: '王道！完璧な育成の証。', color: 'text-green-600' },
-      { id: 5, name: 'ツッパリガエル', desc: 'お世話サボりでグレちゃった…', color: 'text-purple-600' },
-      { id: 6, name: 'デブガエル', desc: '食べ過ぎでまん丸に！', color: 'text-orange-600' },
-      { id: 7, name: 'マッチョガエル', desc: '遊び(運動)の鬼。ムキムキ！', color: 'text-red-600' },
-      { id: 8, name: '仙人ガエル', desc: '寝てばかりで悟りを開いた。', color: 'text-gray-500' },
-      { id: 9, name: 'アイドルガエル', desc: '歌の力で目覚めたスター！', color: 'text-pink-500' },
-      { id: 10, name: '宇宙ガエル', desc: '故郷の星へ帰っていった…', color: 'text-blue-500' },
+      { id: 0, name: 'オタマジャクシ', requiredXp: 0, desc: '元気なオタマジャクソン！' },
+      { id: 1, name: '後脚はえた！', requiredXp: 150, desc: '後ろ足が生えてきたよ。' },
+      { id: 2, name: '四本足！', requiredXp: 350, desc: '前足も生えてカエルに近づいた！' },
+      { id: 3, name: 'しっぽカエル', requiredXp: 600, desc: '顔がカエルになってきた！' },
+      // --- 最終形態（7パターン） ---
+      { id: 4, name: '立派なカエル', desc: '王道！完璧な育成の証。', textColor: 'text-green-600', borderColor: 'border-green-500' },
+      { id: 5, name: 'ツッパリガエル', desc: 'お世話サボりでグレちゃった…', textColor: 'text-purple-600', borderColor: 'border-purple-500' },
+      { id: 6, name: 'デブガエル', desc: '無理やり食べ過ぎてまん丸に！', textColor: 'text-orange-600', borderColor: 'border-orange-500' },
+      { id: 7, name: 'マッチョガエル', desc: '疲労限界まで遊んだ結果、超ムキムキに！', textColor: 'text-red-600', borderColor: 'border-red-500' },
+      { id: 8, name: '仙人ガエル', desc: '寝てばかりで悟りを開いた。', textColor: 'text-gray-600', borderColor: 'border-gray-500' },
+      { id: 9, name: 'アイドルガエル', desc: '歌の力で目覚めたスター！', textColor: 'text-pink-500', borderColor: 'border-pink-500' },
+      { id: 10, name: '宇宙ガエル', desc: '故郷の星へ帰っていった…', textColor: 'text-blue-500', borderColor: 'border-blue-500' },
     ];
 
     const FOODS = [
@@ -37,7 +37,6 @@
       { id: 'snack', name: 'おやつ', emoji: '🍩', full: 10, weight: 15, mood: 30, xp: 5 },
     ];
 
-    // オタマジャクソン描画コンポーネント
     const OtamajacksonSVG = ({ stageIdx, anim, stats, badCareCount }) => {
       let animClass = 'animate-[float_2s_ease-in-out_infinite]';
       if (anim === 'happy') animClass = 'animate-[happy-jump_0.5s_ease-in-out_2]';
@@ -45,37 +44,30 @@
       if (anim === 'angry') animClass = 'animate-[angry-shake_0.1s_linear_infinite]';
       if (anim === 'eat') animClass = 'animate-[eat-bounce_0.4s_ease-in-out_2]';
       
-      // 瀕死・疲労・肥満の判定
-      const isDying = stats.fatigue > 85;
-      const isFat = stats.weight > 80;
-      const hasBeard = badCareCount > 10 && stageIdx < 4; // 育成中サボるとヒゲ
+      const isDying = stats.fatigue > 90;
+      const isFat = stats.weight > 85;
+      const hasBeard = badCareCount > 10 && stageIdx < 4;
 
       if (isDying && anim === 'idle') animClass = 'animate-[sad-shake_0.5s_linear_infinite]';
-      if (isFat && anim === 'idle') animClass = 'animate-[float_4s_ease-in-out_infinite]'; // 動きが鈍い
+      if (isFat && anim === 'idle') animClass = 'animate-[float_4s_ease-in-out_infinite]';
 
-      // ベースカラー
       let baseColor = stageIdx >= 3 ? "#4ade80" : "#1f2937";
-      if (stageIdx === 5) baseColor = "#a855f7"; // ツッパリ
-      if (stageIdx === 6) baseColor = "#fb923c"; // デブ
-      if (stageIdx === 7) baseColor = "#ef4444"; // マッチョ
-      if (stageIdx === 8) baseColor = "#d1d5db"; // 仙人
-      if (stageIdx === 9) baseColor = "#f472b6"; // アイドル
-      if (stageIdx === 10) baseColor = "#3b82f6"; // 宇宙人
+      if (stageIdx === 5) baseColor = "#a855f7"; 
+      if (stageIdx === 6) baseColor = "#fb923c"; 
+      if (stageIdx === 7) baseColor = "#ef4444"; 
+      if (stageIdx === 8) baseColor = "#d1d5db"; 
+      if (stageIdx === 9) baseColor = "#f472b6"; 
+      if (stageIdx === 10) baseColor = "#3b82f6"; 
 
-      // 肥満時の変形
       const transform = isFat && stageIdx < 4 ? "scale(1.2, 0.9) translate(-8, 5)" : "";
       
       return (
-        <div className={`w-56 h-56 relative ${animClass}`}>
+        <div className={`w-full h-full max-w-[12rem] max-h-[12rem] mx-auto relative ${animClass}`}>
           <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl overflow-visible">
             <g transform={transform}>
-              
-              {/* しっぽ (ステージ0〜3) */}
               {stageIdx < 4 && (
                  <path d={stageIdx === 3 ? "M 50 70 Q 50 85 45 90" : "M 50 65 Q 40 80 50 95 Q 60 80 50 65"} fill={baseColor} className="origin-[50%_65%] animate-[tail-wag_0.5s_ease-in-out_infinite_alternate]" />
               )}
-
-              {/* 手足 (ステージ1〜) */}
               {stageIdx >= 1 && stageIdx < 4 && (
                 <g fill={baseColor} stroke={baseColor} strokeWidth="4" strokeLinecap="round">
                   <path d="M 30 60 Q 15 70 20 80" fill="none" /><circle cx="20" cy="80" r="3" />
@@ -89,19 +81,16 @@
                 </g>
               )}
 
-              {/* 体・顔 */}
               {stageIdx >= 3 ? (
                 <g>
-                  {/* 体のベース形状分岐 */}
-                  {stageIdx === 6 ? ( // デブ
+                  {stageIdx === 6 ? (
                      <ellipse cx="50" cy="50" rx="45" ry="35" fill={baseColor} />
-                  ) : stageIdx === 7 ? ( // マッチョ
+                  ) : stageIdx === 7 ? (
                      <path d="M 20 30 L 80 30 L 70 70 L 30 70 Z" fill={baseColor} stroke={baseColor} strokeWidth="10" strokeLinejoin="round" />
                   ) : (
                      <ellipse cx="50" cy="45" rx="30" ry="25" fill={baseColor} />
                   )}
 
-                  {/* マッチョの腕 */}
                   {stageIdx === 7 && (
                     <g fill={baseColor} stroke={baseColor} strokeWidth="8" strokeLinecap="round">
                       <path d="M 20 35 Q -10 30 10 50" fill="none" />
@@ -109,7 +98,6 @@
                     </g>
                   )}
 
-                  {/* 目のふくらみ */}
                   {stageIdx !== 10 && (
                     <>
                       <circle cx="35" cy="28" r="8" fill={baseColor} />
@@ -117,8 +105,7 @@
                     </>
                   )}
 
-                  {/* 装飾パーツ（最終形態ごとの特徴） */}
-                  {stageIdx === 5 && ( // ツッパリ
+                  {stageIdx === 5 && (
                     <g>
                       <path d="M 25 15 Q 50 -10 75 15 Q 80 25 50 20 Q 20 25 25 15 Z" fill="#111827" />
                       <polygon points="25,25 45,25 40,35 30,35" fill="#111827" />
@@ -126,7 +113,7 @@
                       <line x1="45" y1="28" x2="55" y2="28" stroke="#111827" strokeWidth="2" />
                     </g>
                   )}
-                  {stageIdx === 8 && ( // 仙人
+                  {stageIdx === 8 && (
                     <g>
                       <path d="M 30 50 Q 50 80 70 50" fill="white" opacity="0.8" />
                       <path d="M 25 20 Q 35 15 45 25" stroke="white" strokeWidth="3" fill="none" />
@@ -134,13 +121,13 @@
                       <path d="M 80 40 L 80 90 M 75 40 L 85 40" stroke="#78350f" strokeWidth="4" fill="none" />
                     </g>
                   )}
-                  {stageIdx === 9 && ( // アイドル
+                  {stageIdx === 9 && (
                     <g>
                       <path d="M 45 15 L 50 5 L 55 15 L 65 20 L 55 25 L 50 35 L 45 25 L 35 20 Z" fill="yellow" />
                       <circle cx="20" cy="50" r="5" fill="#ec4899" />
                     </g>
                   )}
-                  {stageIdx === 10 && ( // 宇宙人
+                  {stageIdx === 10 && (
                     <g>
                       <ellipse cx="30" cy="40" rx="8" ry="15" fill="black" transform="rotate(-20 30 40)" />
                       <ellipse cx="70" cy="40" rx="8" ry="15" fill="black" transform="rotate(20 70 40)" />
@@ -149,7 +136,6 @@
                     </g>
                   )}
 
-                  {/* 目（基本） */}
                   {stageIdx !== 5 && stageIdx !== 10 && (
                     <g>
                       {stageIdx === 9 ? (
@@ -177,8 +163,7 @@
                     </g>
                   )}
 
-                  {/* 口と表情 */}
-                  {!isBadFrog && stageIdx !== 10 && (
+                  {stageIdx !== 5 && stageIdx !== 10 && (
                     anim === 'angry' || anim === 'sad' || isDying ? (
                       <path d="M 40 55 Q 50 50 60 55" stroke="black" strokeWidth="2" fill="none" />
                     ) : anim === 'eat' ? (
@@ -192,7 +177,6 @@
                   )}
                 </g>
               ) : (
-                // 育成中（ステージ0〜2）
                 <g>
                   {isFat ? <ellipse cx="50" cy="40" rx="35" ry="25" fill="#1f2937" /> : <circle cx="50" cy="40" r="25" fill={isDying ? "#4b5563" : "#1f2937"} />}
                   
@@ -222,7 +206,6 @@
                     <path d="M 45 45 Q 50 52 55 45" stroke="white" strokeWidth="2" fill="none" />
                   )}
 
-                  {/* ヒゲ（サボりペナルティ） */}
                   {hasBeard && (
                     <g stroke="gray" strokeWidth="1" fill="none">
                       <path d="M 40 55 Q 42 60 40 65" />
@@ -231,7 +214,6 @@
                     </g>
                   )}
 
-                  {/* 汗（瀕死時） */}
                   {isDying && (
                     <path d="M 25 25 Q 20 30 25 35 Q 30 30 25 25" fill="#60a5fa" opacity="0.8" />
                   )}
@@ -244,15 +226,16 @@
     };
 
     function App() {
-      const [phase, setPhase] = useState('title');
+      const [phase, setPhase] = useState('title'); // title, main, evolution, minigame, result
       const [stats, setStats] = useState({ full: 100, mood: 100, clean: 100, fatigue: 0, weight: 50, xp: 0 });
       const [counts, setCounts] = useState({ play: 0, sleep: 0, sing: 0, badCare: 0 });
       const [stageIdx, setStageIdx] = useState(0);
       const [poops, setPoops] = useState([]);
       const [anim, setAnim] = useState('idle');
       const [message, setMessage] = useState('よろしくね！');
-      const [menu, setMenu] = useState('main'); // main, food, play
+      const [menu, setMenu] = useState('main'); 
 
+      const [mgType, setMgType] = useState('select');
       const [mgState, setMgState] = useState('start');
       const [mgResult, setMgResult] = useState('');
       const [playerHand, setPlayerHand] = useState(null);
@@ -280,7 +263,7 @@
         }, 1500);
       };
 
-      // ゲームループ
+      // ゲームループ（時間経過）
       useEffect(() => {
         if (phase !== 'main') return;
         const timer = setInterval(() => {
@@ -298,18 +281,17 @@
               mood = Math.max(0, mood - (poops.length * 1));
             }
 
-            // コンディション良好ならXP自然増加
             if (full > 50 && clean > 50 && mood > 50 && fatigue < 50) xp += 2;
             
-            // 疲労や肥満の判定
             if (full < 30 || clean < 30 || poops.length >= 3) isBadCondition = true;
-            if (fatigue >= 100) {
+            
+            // 疲労によるペナルティ
+            if (fatigue >= 120) {
               isDying = true;
-              fatigue = 80; // 倒れて少し回復
-              xp = Math.max(0, xp - 20); // ペナルティ
+              fatigue = 90; // 倒れて少しだけ回復
+              xp = Math.max(0, xp - 20); // 経験値ロスト
             }
 
-            // アニメーションの自動切り替え
             if (fatigue > 85 || isBadCondition) {
               if (anim === 'idle' || anim === 'sad' || anim === 'happy') setAnim('angry');
             } else {
@@ -333,22 +315,21 @@
       // 進化チェック
       useEffect(() => {
         if (phase !== 'main') return;
-        const currentStage = STAGES[stageIdx];
         const nextStage = STAGES[stageIdx + 1];
 
         if (nextStage && stats.xp >= nextStage.requiredXp) {
           if (stageIdx === 3) {
             // 最終形態の分岐判定
-            let finalId = 4; // デフォルト：立派なカエル
+            let finalId = 4; 
             
             if (counts.sing >= 15 && counts.play >= 10 && Math.random() < 0.2) {
-              finalId = 10; // 宇宙人（歌って遊んでたら電波受信）
-            } else if (counts.badCare >= 20) {
+              finalId = 10; // 宇宙人
+            } else if (counts.badCare >= 20 || poops.length >= 5) {
               finalId = 5; // ツッパリ
-            } else if (stats.weight >= 85) {
+            } else if (stats.weight >= 90) {
               finalId = 6; // デブ
-            } else if (stats.weight <= 35 && counts.play >= 15) {
-              finalId = 7; // マッチョ
+            } else if (stats.fatigue >= 100 && counts.play >= 10) {
+              finalId = 7; // マッチョ（過労になるまで遊んだ）
             } else if (counts.sleep >= 15) {
               finalId = 8; // 仙人
             } else if (counts.sing >= 15) {
@@ -356,31 +337,29 @@
             }
 
             setStageIdx(finalId);
-            const msg = finalId === 10 ? 'おや…？空からUFOが…！？' : 'ついに最終進化だ！！';
-            triggerAnim(finalId === 5 ? 'angry' : 'happy', msg);
-            setTimeout(() => setPhase('result'), 3000);
+            setPhase('result');
           } else {
             setStageIdx(stageIdx + 1);
-            triggerAnim('happy', `進化した！「${nextStage.name}」になった！`);
+            setPhase('evolution');
           }
         }
       }, [stats.xp, phase, stageIdx, counts, stats.weight]);
 
-      // アクション
+      // アクション群
       const feed = (food) => {
-        if (stats.full >= 100) {
-          triggerAnim('angry', 'もう食べられない！プイッ');
-          return;
-        }
         setStats(prev => {
-          const w = Math.min(100, prev.weight + food.weight);
-          if (w >= 100) triggerAnim('sad', '太り過ぎて動けない…');
+          const newWeight = prev.weight + food.weight;
+          const newFull = prev.full + food.full;
+          
+          if (newWeight >= 90) triggerAnim('sad', '無理やり食べて太り過ぎ…');
+          else if (prev.full >= 100) triggerAnim('sad', 'お腹いっぱいだけど食べたよ…');
           else triggerAnim('eat', `${food.name} を食べた！`);
+          
           return {
             ...prev,
-            full: Math.min(100, prev.full + food.full),
+            full: Math.min(150, newFull), // 限界突破（表示は100で止まる）
             mood: Math.min(100, prev.mood + food.mood),
-            weight: w,
+            weight: newWeight,
             xp: prev.xp + food.xp
           };
         });
@@ -412,18 +391,21 @@
         setStats(prev => ({
           ...prev,
           mood: 100,
-          fatigue: Math.min(100, prev.fatigue + 10)
+          fatigue: prev.fatigue + 10 // 歌うと少し疲れる
         }));
         triggerAnim('happy', '♪〜 ごきげんMAX！');
       };
 
+      // ミニゲーム群
       const startMinigame = () => {
-        if (stats.fatigue > 80) { triggerAnim('sad', 'つかれてて遊べないよ…'); return; }
-        if (stats.full < 20 || stats.clean < 20) { triggerAnim('angry', 'ごきげんななめ！'); return; }
-        
+        setMgType('select');
         setMgState('start');
         setPlayerHand(null); setEnemyHand(null); setMgResult('');
         setPhase('minigame'); setMenu('main');
+      };
+
+      const selectMinigame = (type) => {
+        setMgType(type);
       };
 
       const playJanken = (hand) => {
@@ -439,17 +421,27 @@
         setTimeout(() => applyMinigameResult(res), 2000);
       };
 
+      const playAhoi = (dir) => {
+        const dirs = ['👆', '👇', '👈', '👉'];
+        const eDir = dirs[Math.floor(Math.random() * 4)];
+        setPlayerHand(dir); setEnemyHand(eDir);
+        
+        const res = dir === eDir ? 'win' : 'lose';
+        setMgResult(res); setMgState('result');
+        setTimeout(() => applyMinigameResult(res), 2000);
+      };
+
       const applyMinigameResult = (res) => {
         setPhase('main');
         setCounts(c => ({ ...c, play: c.play + 1 }));
         if (res === 'win') {
-          setStats(p => ({ ...p, xp: p.xp + 30, mood: Math.max(0, p.mood - 5), fatigue: Math.min(100, p.fatigue + 25), weight: Math.max(0, p.weight - 5) }));
+          setStats(p => ({ ...p, xp: p.xp + 30, mood: Math.max(0, p.mood - 5), fatigue: p.fatigue + 30, weight: Math.max(0, p.weight - 5) }));
           triggerAnim('sad', '負けちゃった…くやしい！');
         } else if (res === 'lose') {
-          setStats(p => ({ ...p, xp: p.xp + 30, mood: Math.min(100, p.mood + 20), fatigue: Math.min(100, p.fatigue + 25), weight: Math.max(0, p.weight - 5) }));
+          setStats(p => ({ ...p, xp: p.xp + 30, mood: Math.min(100, p.mood + 20), fatigue: p.fatigue + 30, weight: Math.max(0, p.weight - 5) }));
           triggerAnim('happy', 'やったー！ぼくの勝ち！');
         } else {
-          setStats(p => ({ ...p, fatigue: Math.min(100, p.fatigue + 10) }));
+          setStats(p => ({ ...p, fatigue: p.fatigue + 15 }));
           triggerAnim('idle', 'あいこだね！');
         }
       };
@@ -460,12 +452,13 @@
         setStageIdx(0); setPoops([]); setAnim('idle'); setPhase('main');
       };
 
+      // メーター表示用部品（100を超えてもバーは突き抜けないように制御）
       const StatusBar = ({ label, value, color, invert }) => {
-        // invert=true の場合、数値が高いほどヤバい色にする（疲労、体重）
+        const displayValue = Math.min(100, Math.max(0, value));
         let bg = `bg-${color}-500`;
         if (invert) {
-          if (value > 80) bg = 'bg-red-600 animate-pulse';
-          else if (value > 50) bg = 'bg-yellow-500';
+          if (value > 85) bg = 'bg-red-600 animate-pulse';
+          else if (value > 60) bg = 'bg-yellow-500';
           else bg = 'bg-green-400';
         } else {
           if (value < 20) bg = 'bg-red-600 animate-pulse';
@@ -473,30 +466,33 @@
         return (
           <div className="flex items-center text-[10px] md:text-xs font-bold w-full mb-1">
             <span className="w-12 text-gray-700 truncate">{label}</span>
-            <div className="flex-1 bg-gray-300 h-2.5 rounded-full overflow-hidden mx-1 border border-gray-400">
-              <div className={`h-full ${bg} transition-all duration-500`} style={{ width: `${value}%` }} />
+            <div className="flex-1 bg-gray-300 h-2.5 rounded-full overflow-hidden mx-1 border border-gray-400 relative">
+              <div className={`h-full ${bg} transition-all duration-500`} style={{ width: `${displayValue}%` }} />
+              {/* 限界突破時のエフェクト */}
+              {value > 100 && <div className="absolute inset-0 bg-white/40 animate-pulse"></div>}
             </div>
           </div>
         );
       };
 
       return (
-        <div className="w-full h-[100dvh] flex items-center justify-center font-sans no-select relative">
+        <div className="w-full h-[100dvh] flex items-center justify-center font-sans no-select relative bg-gray-800 overflow-hidden">
           <style>{styles}</style>
           
-          <div className="w-full h-full max-w-md bg-sky-100 flex flex-col relative overflow-hidden sm:h-[800px] sm:max-h-[95vh] sm:rounded-[40px] sm:shadow-2xl sm:border-[8px] sm:border-gray-900">
+          {/* スマホ風コンテナ（縦に伸びすぎないように制限） */}
+          <div className="w-full h-full max-w-md bg-sky-100 flex flex-col relative overflow-hidden sm:h-[90dvh] sm:max-h-[850px] sm:rounded-[30px] sm:shadow-2xl sm:border-[8px] sm:border-gray-900">
             
             {phase === 'title' && (
               <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-sky-300 to-blue-500">
                 <div className="bg-white/95 p-6 rounded-3xl shadow-2xl text-center w-full border-4 border-blue-400">
                   <h1 className="text-3xl font-black text-blue-600 mb-2">オタマジャクソン<br/>究極育成</h1>
-                  <div className="flex justify-center my-4">
+                  <div className="flex justify-center my-4 h-32">
                     <OtamajacksonSVG stageIdx={0} anim="idle" stats={stats} badCareCount={0} />
                   </div>
-                  <p className="text-gray-700 font-bold mb-6 text-xs text-left bg-blue-50 p-3 rounded-lg">
+                  <p className="text-gray-700 font-bold mb-6 text-xs text-left bg-blue-50 p-3 rounded-lg leading-relaxed">
                     🍚ごはん 🧽そうじ 🎮あそぶ 💤やすむ 🎵うたう<br/>
                     お世話の仕方によって<span className="text-red-500 text-sm">全7種類の最終形態</span>に進化！<br/>
-                    太り過ぎや過労に気をつけよう！
+                    メーターが一杯でも無理やりお世話できます。<br/>限界突破の過酷なお世話が、特殊な進化の鍵かも…？
                   </p>
                   <button onClick={() => setPhase('main')} className="w-full bg-green-500 hover:bg-green-600 text-white text-xl font-black py-4 rounded-full shadow-[0_6px_0_#166534] active:translate-y-[6px] active:shadow-none transition-all">
                     育成スタート！
@@ -506,11 +502,12 @@
             )}
 
             {phase === 'main' && (
-              <div className="flex-1 flex flex-col bg-gradient-to-b from-cyan-100 to-blue-300">
-                <div className="bg-white/95 p-3 shadow-md z-10 border-b-4 border-blue-200">
+              <div className="flex-1 flex flex-col bg-gradient-to-b from-cyan-100 to-blue-300 min-h-0">
+                {/* ステータスエリア */}
+                <div className="bg-white/95 p-2 md:p-3 shadow-md z-10 border-b-4 border-blue-200 flex-shrink-0">
                   <div className="flex justify-between items-end mb-1">
-                    <h2 className="text-lg font-black text-blue-800">オタマジャクソン</h2>
-                    <span className="text-xs font-bold text-gray-500">{STAGES[stageIdx].name}</span>
+                    <h2 className="text-base md:text-lg font-black text-blue-800">オタマジャクソン</h2>
+                    <span className="text-[10px] md:text-xs font-bold text-gray-500">{STAGES[stageIdx].name}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-x-2">
                     <StatusBar label="まんぷく" value={stats.full} color="orange" />
@@ -526,40 +523,41 @@
                   </div>
                 </div>
 
-                <div className="flex-1 relative flex items-center justify-center overflow-hidden bg-sky-200/50 border-4 border-blue-300 m-3 rounded-3xl shadow-inner">
+                {/* 水槽エリア */}
+                <div className="flex-1 relative flex items-center justify-center overflow-hidden bg-sky-200/50 border-4 border-blue-300 m-2 rounded-2xl shadow-inner min-h-0">
                   {message && (
-                    <div className={`absolute top-4 px-3 py-1 rounded-2xl shadow-lg font-bold border-2 text-sm z-20 animate-[float_2s_ease-in-out_infinite] ${anim === 'angry' ? 'bg-red-100 border-red-400 text-red-800' : 'bg-white border-gray-200 text-gray-800'}`}>
+                    <div className={`absolute top-2 px-3 py-1 rounded-2xl shadow-lg font-bold border-2 text-xs md:text-sm z-20 animate-[float_2s_ease-in-out_infinite] ${anim === 'angry' ? 'bg-red-100 border-red-400 text-red-800' : 'bg-white border-gray-200 text-gray-800'}`}>
                       {message}
                     </div>
                   )}
-                  <div className="z-10">
+                  <div className="z-10 w-full h-full max-w-[14rem] max-h-[14rem] flex items-center justify-center">
                     <OtamajacksonSVG stageIdx={stageIdx} anim={anim} stats={stats} badCareCount={counts.badCare} />
                   </div>
                   {poops.map(p => (
-                    <div key={p.id} className="absolute text-3xl animate-[sad-shake_2s_linear_infinite]" style={{ left: `${p.x}%`, top: `${p.y}%` }}>💩</div>
+                    <div key={p.id} className="absolute text-2xl md:text-3xl animate-[sad-shake_2s_linear_infinite]" style={{ left: `${p.x}%`, top: `${p.y}%` }}>💩</div>
                   ))}
-                  <div className="absolute bottom-0 w-full h-1/4 bg-blue-400/30 rounded-b-2xl pointer-events-none"></div>
+                  <div className="absolute bottom-0 w-full h-1/4 bg-blue-400/30 rounded-b-xl pointer-events-none"></div>
                 </div>
 
                 {/* 操作パネル */}
-                <div className="bg-white p-3 rounded-t-3xl shadow-[0_-4px_10px_rgba(0,0,0,0.1)] z-10 min-h-[160px]">
+                <div className="bg-white p-2 rounded-t-2xl shadow-[0_-4px_10px_rgba(0,0,0,0.1)] z-10 flex-shrink-0 min-h-[140px] md:min-h-[160px]">
                   {menu === 'main' && (
-                    <div className="grid grid-cols-3 gap-2 h-full">
-                      <button onClick={() => setMenu('food')} className="flex flex-col items-center justify-center bg-orange-100 border-2 border-orange-300 rounded-xl py-2 active:scale-95">
-                        <span className="text-2xl">🍚</span><span className="font-bold text-xs text-orange-800">ごはん</span>
+                    <div className="grid grid-cols-3 gap-1.5 h-full">
+                      <button onClick={() => setMenu('food')} className="flex flex-col items-center justify-center bg-orange-100 border-2 border-orange-300 rounded-xl py-1 active:scale-95">
+                        <span className="text-xl md:text-2xl">🍚</span><span className="font-bold text-[10px] md:text-xs text-orange-800">ごはん</span>
                       </button>
-                      <button onClick={cleanRoom} className="flex flex-col items-center justify-center bg-blue-100 border-2 border-blue-300 rounded-xl py-2 active:scale-95 relative">
-                        <span className="text-2xl">🧽</span><span className="font-bold text-xs text-blue-800">そうじ</span>
-                        {poops.length > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-pulse">{poops.length}</span>}
+                      <button onClick={cleanRoom} className="flex flex-col items-center justify-center bg-blue-100 border-2 border-blue-300 rounded-xl py-1 active:scale-95 relative">
+                        <span className="text-xl md:text-2xl">🧽</span><span className="font-bold text-[10px] md:text-xs text-blue-800">そうじ</span>
+                        {poops.length > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full animate-pulse">{poops.length}</span>}
                       </button>
-                      <button onClick={startMinigame} className="flex flex-col items-center justify-center bg-red-100 border-2 border-red-300 rounded-xl py-2 active:scale-95">
-                        <span className="text-2xl">🎮</span><span className="font-bold text-xs text-red-800">あそぶ</span>
+                      <button onClick={startMinigame} className="flex flex-col items-center justify-center bg-red-100 border-2 border-red-300 rounded-xl py-1 active:scale-95">
+                        <span className="text-xl md:text-2xl">🎮</span><span className="font-bold text-[10px] md:text-xs text-red-800">あそぶ</span>
                       </button>
-                      <button onClick={rest} className="flex flex-col items-center justify-center bg-purple-100 border-2 border-purple-300 rounded-xl py-2 active:scale-95 col-span-1">
-                        <span className="text-2xl">💤</span><span className="font-bold text-xs text-purple-800">やすむ</span>
+                      <button onClick={rest} className="flex flex-col items-center justify-center bg-purple-100 border-2 border-purple-300 rounded-xl py-1 active:scale-95 col-span-1">
+                        <span className="text-xl md:text-2xl">💤</span><span className="font-bold text-[10px] md:text-xs text-purple-800">やすむ</span>
                       </button>
-                      <button onClick={sing} className="flex flex-col items-center justify-center bg-pink-100 border-2 border-pink-300 rounded-xl py-2 active:scale-95 col-span-2">
-                        <span className="text-2xl">🎵</span><span className="font-bold text-xs text-pink-800">うたをうたう</span>
+                      <button onClick={sing} className="flex flex-col items-center justify-center bg-pink-100 border-2 border-pink-300 rounded-xl py-1 active:scale-95 col-span-2">
+                        <span className="text-xl md:text-2xl">🎵</span><span className="font-bold text-[10px] md:text-xs text-pink-800">うたをうたう</span>
                       </button>
                     </div>
                   )}
@@ -567,13 +565,13 @@
                   {menu === 'food' && (
                     <div className="h-full flex flex-col">
                       <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-black text-sm text-orange-800">どれをあげる？</h3>
-                        <button onClick={() => setMenu('main')} className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-bold">もどる</button>
+                        <h3 className="font-black text-xs md:text-sm text-orange-800">どれをあげる？</h3>
+                        <button onClick={() => setMenu('main')} className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold">もどる</button>
                       </div>
                       <div className="flex gap-2">
                         {FOODS.map(f => (
-                          <button key={f.id} onClick={() => feed(f)} className="flex-1 bg-orange-50 border border-orange-200 rounded-xl p-2 flex flex-col items-center active:bg-orange-200">
-                            <span className="text-2xl mb-1">{f.emoji}</span><span className="text-[10px] font-bold text-gray-800">{f.name}</span>
+                          <button key={f.id} onClick={() => feed(f)} className="flex-1 bg-orange-50 border border-orange-200 rounded-xl py-1 flex flex-col items-center active:bg-orange-200">
+                            <span className="text-xl md:text-2xl mb-0.5">{f.emoji}</span><span className="text-[9px] md:text-[10px] font-bold text-gray-800">{f.name}</span>
                           </button>
                         ))}
                       </div>
@@ -583,27 +581,67 @@
               </div>
             )}
 
+            {phase === 'evolution' && (
+              <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-yellow-200 to-yellow-500 z-50 absolute inset-0">
+                <div className="bg-white/95 p-6 rounded-3xl shadow-2xl text-center w-full border-4 border-yellow-400 animate-[pulse-fast_1s_ease-in-out_infinite]">
+                  <h2 className="text-2xl font-black text-yellow-600 mb-2">おめでとう！</h2>
+                  <div className="flex justify-center mb-4 h-32">
+                    <OtamajacksonSVG stageIdx={stageIdx} anim="happy" stats={stats} badCareCount={counts.badCare} />
+                  </div>
+                  <h3 className="text-xl font-black mb-2">「{STAGES[stageIdx].name}」に進化した！</h3>
+                  <p className="text-sm font-bold mb-6 text-gray-700 bg-yellow-50 p-2 rounded-lg">
+                    {STAGES[stageIdx].desc}
+                  </p>
+                  <button onClick={() => setPhase('main')} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white text-lg font-black py-3 rounded-full shadow-[0_4px_0_#ca8a04] active:translate-y-[4px] active:shadow-none transition-all">
+                    お世話にもどる
+                  </button>
+                </div>
+              </div>
+            )}
+
             {phase === 'minigame' && (
               <div className="flex-1 flex flex-col bg-pink-100 justify-center items-center p-4">
-                <div className="bg-white p-6 rounded-3xl shadow-xl w-full text-center border-4 border-pink-300">
-                  <h2 className="text-xl font-black text-pink-600 mb-4">じゃんけん 勝負！</h2>
+                <div className="bg-white p-4 md:p-6 rounded-3xl shadow-xl w-full text-center border-4 border-pink-300 flex flex-col min-h-0">
+                  <h2 className="text-lg md:text-xl font-black text-pink-600 mb-2">
+                    {mgType === 'select' ? 'なにしてあそぶ？' : (mgType === 'janken' ? 'じゃんけん 勝負！' : 'あっち向いてホイ！')}
+                  </h2>
+                  
                   {mgState === 'start' && (
                     <>
-                      <div className="flex justify-center mb-4"><OtamajacksonSVG stageIdx={stageIdx} anim="idle" stats={stats} badCareCount={counts.badCare} /></div>
-                      <div className="grid grid-cols-3 gap-3">
-                        {['✊', '✌️', '✋'].map(h => (<button key={h} onClick={() => playJanken(h)} className="text-4xl bg-gray-100 p-3 rounded-xl border-2 border-gray-300 active:scale-95">{h}</button>))}
+                      <div className="flex justify-center mb-2 flex-shrink-0 h-28">
+                        <OtamajacksonSVG stageIdx={stageIdx} anim={stats.fatigue > 100 ? "sad" : "idle"} stats={stats} badCareCount={counts.badCare} />
                       </div>
-                      <button onClick={() => setPhase('main')} className="mt-4 text-gray-500 font-bold text-sm underline">やめる</button>
+                      
+                      {mgType === 'select' ? (
+                        <div className="flex gap-2 justify-center">
+                          <button onClick={() => selectMinigame('janken')} className="flex-1 bg-pink-50 border-2 border-pink-200 rounded-xl py-3 px-2 font-bold active:bg-pink-200 text-sm">✊ じゃんけん</button>
+                          <button onClick={() => selectMinigame('ahoi')} className="flex-1 bg-purple-50 border-2 border-purple-200 rounded-xl py-3 px-2 font-bold active:bg-purple-200 text-sm">👆 あっち向いて</button>
+                        </div>
+                      ) : mgType === 'janken' ? (
+                        <div className="grid grid-cols-3 gap-2">
+                          {['✊', '✌️', '✋'].map(h => (<button key={h} onClick={() => playJanken(h)} className="text-3xl md:text-4xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95">{h}</button>))}
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-3 gap-1.5 max-w-[200px] mx-auto">
+                          <div/><button onClick={() => playAhoi('👆')} className="text-2xl md:text-3xl bg-gray-100 py-2 rounded-xl border-2 border-gray-300 active:scale-95">👆</button><div/>
+                          <button onClick={() => playAhoi('👈')} className="text-2xl md:text-3xl bg-gray-100 py-2 rounded-xl border-2 border-gray-300 active:scale-95">👈</button>
+                          <div className="flex items-center justify-center font-black text-gray-400 text-xs">顔</div>
+                          <button onClick={() => playAhoi('👉')} className="text-2xl md:text-3xl bg-gray-100 py-2 rounded-xl border-2 border-gray-300 active:scale-95">👉</button>
+                          <div/><button onClick={() => playAhoi('👇')} className="text-2xl md:text-3xl bg-gray-100 py-2 rounded-xl border-2 border-gray-300 active:scale-95">👇</button><div/>
+                        </div>
+                      )}
+                      <button onClick={() => setPhase('main')} className="mt-4 text-gray-500 font-bold text-xs underline">やめる</button>
                     </>
                   )}
+                  
                   {mgState === 'result' && (
                     <div className="animate-[pulse-fast_0.3s_ease-in-out]">
                       <div className="flex justify-around items-center mb-6">
-                        <div className="flex flex-col items-center"><span className="text-xs font-bold text-blue-600 mb-1">あなた</span><span className="text-5xl bg-blue-100 p-3 rounded-full border-2 border-blue-300">{playerHand}</span></div>
-                        <div className="text-2xl font-black text-red-500">VS</div>
-                        <div className="flex flex-col items-center"><span className="text-xs font-bold text-green-600 mb-1">オタマ</span><span className="text-5xl bg-green-100 p-3 rounded-full border-2 border-green-300">{enemyHand}</span></div>
+                        <div className="flex flex-col items-center"><span className="text-xs font-bold text-blue-600 mb-1">あなた</span><span className="text-4xl md:text-5xl bg-blue-100 p-3 rounded-full border-2 border-blue-300">{playerHand}</span></div>
+                        <div className="text-xl font-black text-red-500">VS</div>
+                        <div className="flex flex-col items-center"><span className="text-xs font-bold text-green-600 mb-1">オタマ</span><span className="text-4xl md:text-5xl bg-green-100 p-3 rounded-full border-2 border-green-300">{enemyHand}</span></div>
                       </div>
-                      <div className="text-2xl font-black mb-2">
+                      <div className="text-xl md:text-2xl font-black mb-2">
                         {mgResult === 'win' && <span className="text-red-500">きみの勝ち！🎉</span>}
                         {mgResult === 'lose' && <span className="text-blue-500">きみの負け…💧</span>}
                         {mgResult === 'draw' && <span className="text-gray-600">あいこ！</span>}
@@ -616,15 +654,15 @@
 
             {phase === 'result' && (
               <div className={`flex-1 flex flex-col items-center justify-center p-6 z-50 absolute inset-0 ${stageIdx === 10 ? 'bg-black' : 'bg-gradient-to-t from-green-400 to-sky-300'}`}>
-                <div className={`bg-white/95 p-6 rounded-3xl shadow-2xl text-center w-full border-4 animate-[float_2s_ease-in-out_infinite] ${STAGES[stageIdx].color.replace('text-', 'border-')}`}>
-                  <h2 className={`text-2xl font-black mb-4 ${STAGES[stageIdx].color}`}>
+                <div className={`bg-white/95 p-6 rounded-3xl shadow-2xl text-center w-full border-4 animate-[float_2s_ease-in-out_infinite] ${STAGES[stageIdx].borderColor || 'border-yellow-400'}`}>
+                  <h2 className={`text-2xl font-black mb-4 ${STAGES[stageIdx].textColor}`}>
                     {stageIdx === 10 ? 'お別れの時…' : '最終進化！！'}
                   </h2>
-                  <div className="flex justify-center mb-4">
+                  <div className="flex justify-center mb-4 h-32">
                      <OtamajacksonSVG stageIdx={stageIdx} anim="idle" stats={stats} badCareCount={counts.badCare} />
                   </div>
-                  <h3 className={`text-3xl font-black mb-2 ${STAGES[stageIdx].color}`}>{STAGES[stageIdx].name}</h3>
-                  <p className="text-sm font-bold mb-6 p-3 rounded-xl bg-gray-100 text-gray-800">
+                  <h3 className={`text-2xl md:text-3xl font-black mb-2 ${STAGES[stageIdx].textColor}`}>{STAGES[stageIdx].name}</h3>
+                  <p className="text-xs md:text-sm font-bold mb-6 p-3 rounded-xl bg-gray-100 text-gray-800">
                     {STAGES[stageIdx].desc}
                   </p>
                   <button onClick={resetGame} className="w-full bg-blue-500 hover:bg-blue-600 text-white text-lg font-black py-3 rounded-full shadow-[0_4px_0_#1e3a8a] active:translate-y-[4px] active:shadow-none transition-all">
@@ -632,7 +670,6 @@
                   </button>
                 </div>
                 
-                {/* 宇宙人の時の星エフェクト */}
                 {stageIdx === 10 && (
                   <div className="absolute inset-0 pointer-events-none opacity-50">
                      <div className="absolute top-10 left-10 text-white text-2xl animate-pulse">✨</div>
