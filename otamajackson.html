@@ -21,14 +21,14 @@
       { id: 1, name: '後脚はえた！', requiredXp: 150, desc: '後ろ足が生えてきたよ。' },
       { id: 2, name: '四本足！', requiredXp: 350, desc: '前足も生えてカエルに近づいた！' },
       { id: 3, name: 'しっぽカエル', requiredXp: 600, desc: '顔がカエルになってきた！' },
-      // --- 最終形態（7パターン） ---
-      { id: 4, name: '立派なカエル', desc: '王道！完璧な育成の証。', textColor: 'text-green-600', borderColor: 'border-green-500' },
-      { id: 5, name: 'ツッパリガエル', desc: 'お世話サボりでグレちゃった…', textColor: 'text-purple-600', borderColor: 'border-purple-500' },
-      { id: 6, name: 'デブガエル', desc: '無理やり食べ過ぎてまん丸に！', textColor: 'text-orange-600', borderColor: 'border-orange-500' },
-      { id: 7, name: 'マッチョガエル', desc: '疲労限界まで遊んだ結果、超ムキムキに！', textColor: 'text-red-600', borderColor: 'border-red-500' },
-      { id: 8, name: '仙人ガエル', desc: '寝てばかりで悟りを開いた。', textColor: 'text-gray-600', borderColor: 'border-gray-500' },
-      { id: 9, name: 'アイドルガエル', desc: '歌の力で目覚めたスター！', textColor: 'text-pink-500', borderColor: 'border-pink-500' },
-      { id: 10, name: '宇宙ガエル', desc: '故郷の星へ帰っていった…', textColor: 'text-blue-500', borderColor: 'border-blue-500' },
+      // --- 最終形態（7パターン） rankでスクショの装飾が変わる ---
+      { id: 4, name: '立派なカエル', desc: '王道！完璧な育成の証。', textColor: 'text-green-600', rank: 'good' },
+      { id: 5, name: 'ツッパリガエル', desc: 'お世話サボりでグレちゃった…', textColor: 'text-purple-600', rank: 'bad' },
+      { id: 6, name: 'デブガエル', desc: '無理やり食べ過ぎてまん丸に！', textColor: 'text-orange-600', rank: 'bad' },
+      { id: 7, name: 'マッチョガエル', desc: '疲労限界まで遊んだ結果、超ムキムキに！', textColor: 'text-red-600', rank: 'good' },
+      { id: 8, name: '仙人ガエル', desc: '寝てばかりで悟りを開いた。', textColor: 'text-gray-600', rank: 'normal' },
+      { id: 9, name: 'アイドルガエル', desc: '歌の力で目覚めたスター！', textColor: 'text-pink-500', rank: 'good' },
+      { id: 10, name: '宇宙ガエル', desc: '故郷の星へ帰っていった…', textColor: 'text-blue-500', rank: 'good' },
     ];
 
     const FOODS = [
@@ -46,7 +46,7 @@
       
       const isDying = stats.fatigue > 90;
       const isFat = stats.weight > 85;
-      const hasBeard = badCareCount > 10 && stageIdx < 4;
+      const hasBeard = badCareCount > 15 && stageIdx < 4;
 
       if (isDying && anim === 'idle') animClass = 'animate-[sad-shake_0.5s_linear_infinite]';
       if (isFat && anim === 'idle') animClass = 'animate-[float_4s_ease-in-out_infinite]';
@@ -225,6 +225,37 @@
       );
     };
 
+    // スクショ画面の装飾コンポーネント
+    const ScreenshotDecoration = ({ rank }) => {
+      if (rank === 'good') {
+        return (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl border-[10px] border-yellow-400 z-0">
+            <div className="absolute top-2 left-2 text-4xl">✨</div>
+            <div className="absolute top-2 right-2 text-4xl">✨</div>
+            <div className="absolute bottom-2 left-2 text-4xl">🎉</div>
+            <div className="absolute bottom-2 right-2 text-4xl">🎊</div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 text-5xl -mt-4 animate-bounce">👑</div>
+          </div>
+        );
+      } else if (rank === 'bad') {
+        return (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl border-8 border-gray-600 border-dashed bg-gray-900/10 z-0">
+            <div className="absolute top-2 left-2 text-4xl opacity-70">🕸️</div>
+            <div className="absolute bottom-2 right-2 text-4xl opacity-70">🕷️</div>
+            <div className="absolute top-10 right-4 text-3xl animate-bounce opacity-70">🪰</div>
+            <div className="absolute bottom-10 left-4 text-3xl opacity-70">🍂</div>
+          </div>
+        );
+      } else {
+        return (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl border-8 border-amber-700 border-double z-0">
+            <div className="absolute top-2 left-2 text-4xl">🍵</div>
+            <div className="absolute bottom-2 right-2 text-4xl">☁️</div>
+          </div>
+        );
+      }
+    };
+
     function App() {
       const [phase, setPhase] = useState('title'); // title, main, evolution, minigame, result
       const [stats, setStats] = useState({ full: 100, mood: 100, clean: 100, fatigue: 0, weight: 50, xp: 0 });
@@ -285,11 +316,11 @@
             
             if (full < 30 || clean < 30 || poops.length >= 3) isBadCondition = true;
             
-            // 疲労によるペナルティ
+            // 疲労ペナルティ
             if (fatigue >= 120) {
               isDying = true;
-              fatigue = 90; // 倒れて少しだけ回復
-              xp = Math.max(0, xp - 20); // 経験値ロスト
+              fatigue = 90;
+              xp = Math.max(0, xp - 20);
             }
 
             if (fatigue > 85 || isBadCondition) {
@@ -301,6 +332,7 @@
             return { full, mood, clean, fatigue, weight, xp };
           });
 
+          // 悪い状態が続くと「badCareCount」がどんどん増える
           if (isBadCondition) setCounts(c => ({ ...c, badCare: c.badCare + 1 }));
           if (isDying) triggerAnim('sad', '過労で倒れた…休ませて！');
           
@@ -322,28 +354,31 @@
             // 最終形態の分岐判定
             let finalId = 4; 
             
-            if (counts.sing >= 15 && counts.play >= 10 && Math.random() < 0.2) {
-              finalId = 10; // 宇宙人
-            } else if (counts.badCare >= 20 || poops.length >= 5) {
-              finalId = 5; // ツッパリ
+            // 悪い進化の判定を強化（サボりカウントや体重、疲労を重視）
+            if (counts.badCare >= 30 || poops.length >= 5) {
+              finalId = 5; // ツッパリ（最悪）
             } else if (stats.weight >= 90) {
-              finalId = 6; // デブ
-            } else if (stats.fatigue >= 100 && counts.play >= 10) {
-              finalId = 7; // マッチョ（過労になるまで遊んだ）
+              finalId = 6; // デブ（悪い）
+            } else if (counts.sing >= 15 && counts.play >= 10 && Math.random() < 0.2) {
+              finalId = 10; // 宇宙人
+            } else if (stats.fatigue >= 90 && counts.play >= 10) {
+              finalId = 7; // マッチョ（過酷なトレーニング）
             } else if (counts.sleep >= 15) {
               finalId = 8; // 仙人
             } else if (counts.sing >= 15) {
               finalId = 9; // アイドル
+            } else if (counts.badCare >= 15) {
+              finalId = 5; // ツッパリ（軽度のサボりでも）
             }
 
             setStageIdx(finalId);
-            setPhase('result');
+            setPhase('result'); // スクショ画面へ直行
           } else {
             setStageIdx(stageIdx + 1);
             setPhase('evolution');
           }
         }
-      }, [stats.xp, phase, stageIdx, counts, stats.weight]);
+      }, [stats.xp, phase, stageIdx, counts, stats.weight, poops.length]);
 
       // アクション群
       const feed = (food) => {
@@ -357,7 +392,7 @@
           
           return {
             ...prev,
-            full: Math.min(150, newFull), // 限界突破（表示は100で止まる）
+            full: Math.min(150, newFull), 
             mood: Math.min(100, prev.mood + food.mood),
             weight: newWeight,
             xp: prev.xp + food.xp
@@ -391,7 +426,7 @@
         setStats(prev => ({
           ...prev,
           mood: 100,
-          fatigue: prev.fatigue + 10 // 歌うと少し疲れる
+          fatigue: prev.fatigue + 10 
         }));
         triggerAnim('happy', '♪〜 ごきげんMAX！');
       };
@@ -452,7 +487,6 @@
         setStageIdx(0); setPoops([]); setAnim('idle'); setPhase('main');
       };
 
-      // メーター表示用部品（100を超えてもバーは突き抜けないように制御）
       const StatusBar = ({ label, value, color, invert }) => {
         const displayValue = Math.min(100, Math.max(0, value));
         let bg = `bg-${color}-500`;
@@ -464,11 +498,10 @@
           if (value < 20) bg = 'bg-red-600 animate-pulse';
         }
         return (
-          <div className="flex items-center text-[10px] md:text-xs font-bold w-full mb-1">
-            <span className="w-12 text-gray-700 truncate">{label}</span>
-            <div className="flex-1 bg-gray-300 h-2.5 rounded-full overflow-hidden mx-1 border border-gray-400 relative">
+          <div className="flex items-center text-xs font-bold w-full mb-1">
+            <span className="w-16 text-gray-700 truncate">{label}</span>
+            <div className="flex-1 bg-gray-300 h-3 rounded-full overflow-hidden mx-1.5 border border-gray-400 relative">
               <div className={`h-full ${bg} transition-all duration-500`} style={{ width: `${displayValue}%` }} />
-              {/* 限界突破時のエフェクト */}
               {value > 100 && <div className="absolute inset-0 bg-white/40 animate-pulse"></div>}
             </div>
           </div>
@@ -479,20 +512,19 @@
         <div className="w-full h-[100dvh] flex items-center justify-center font-sans no-select relative bg-gray-800 overflow-hidden">
           <style>{styles}</style>
           
-          {/* スマホ風コンテナ（縦に伸びすぎないように制限） */}
-          <div className="w-full h-full max-w-md bg-sky-100 flex flex-col relative overflow-hidden sm:h-[90dvh] sm:max-h-[850px] sm:rounded-[30px] sm:shadow-2xl sm:border-[8px] sm:border-gray-900">
+          <div className="w-full h-full max-w-xl mx-auto bg-sky-100 flex flex-col relative overflow-hidden sm:h-[85dvh] sm:max-h-[750px] sm:rounded-[40px] sm:shadow-2xl sm:border-[12px] sm:border-gray-900">
             
             {phase === 'title' && (
               <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-sky-300 to-blue-500">
-                <div className="bg-white/95 p-6 rounded-3xl shadow-2xl text-center w-full border-4 border-blue-400">
-                  <h1 className="text-3xl font-black text-blue-600 mb-2">オタマジャクソン<br/>究極育成</h1>
-                  <div className="flex justify-center my-4 h-32">
+                <div className="bg-white/95 p-6 md:p-8 rounded-3xl shadow-2xl text-center w-full max-w-md border-4 border-blue-400">
+                  <h1 className="text-3xl md:text-4xl font-black text-blue-600 mb-2">オタマジャクソン<br/>究極育成</h1>
+                  <div className="flex justify-center my-4 h-32 md:h-40">
                     <OtamajacksonSVG stageIdx={0} anim="idle" stats={stats} badCareCount={0} />
                   </div>
-                  <p className="text-gray-700 font-bold mb-6 text-xs text-left bg-blue-50 p-3 rounded-lg leading-relaxed">
+                  <p className="text-gray-700 font-bold mb-6 text-xs md:text-sm text-left bg-blue-50 p-4 rounded-xl leading-relaxed">
                     🍚ごはん 🧽そうじ 🎮あそぶ 💤やすむ 🎵うたう<br/>
                     お世話の仕方によって<span className="text-red-500 text-sm">全7種類の最終形態</span>に進化！<br/>
-                    メーターが一杯でも無理やりお世話できます。<br/>限界突破の過酷なお世話が、特殊な進化の鍵かも…？
+                    メーターが一杯でも無理やりお世話できます。<br/>放置したり限界突破させると変な姿になるかも…？
                   </p>
                   <button onClick={() => setPhase('main')} className="w-full bg-green-500 hover:bg-green-600 text-white text-xl font-black py-4 rounded-full shadow-[0_6px_0_#166534] active:translate-y-[6px] active:shadow-none transition-all">
                     育成スタート！
@@ -502,62 +534,65 @@
             )}
 
             {phase === 'main' && (
-              <div className="flex-1 flex flex-col bg-gradient-to-b from-cyan-100 to-blue-300 min-h-0">
+              <div className="flex-1 flex flex-col bg-gradient-to-b from-cyan-100 to-blue-300 min-h-0 justify-between">
                 {/* ステータスエリア */}
-                <div className="bg-white/95 p-2 md:p-3 shadow-md z-10 border-b-4 border-blue-200 flex-shrink-0">
-                  <div className="flex justify-between items-end mb-1">
-                    <h2 className="text-base md:text-lg font-black text-blue-800">オタマジャクソン</h2>
-                    <span className="text-[10px] md:text-xs font-bold text-gray-500">{STAGES[stageIdx].name}</span>
+                <div className="bg-white/95 p-3 md:p-4 shadow-md z-10 border-b-4 border-blue-200 flex-shrink-0">
+                  <div className="flex justify-between items-end mb-2">
+                    <h2 className="text-lg md:text-xl font-black text-blue-800">オタマジャクソン</h2>
+                    {/* 進化までの回数を明記 */}
+                    <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                      進化: {STAGES[stageIdx].name} {stageIdx < 3 ? <span className="text-blue-500">(あと{3 - stageIdx}回で最終形態)</span> : <span className="text-red-500 animate-pulse">(次が最終形態！)</span>}
+                    </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-x-2">
+                  <div className="grid grid-cols-2 gap-x-4">
                     <StatusBar label="まんぷく" value={stats.full} color="orange" />
                     <StatusBar label="ひろう" value={stats.fatigue} color="purple" invert={true} />
                     <StatusBar label="ごきげん" value={stats.mood} color="pink" />
                     <StatusBar label="たいじゅう" value={stats.weight} color="amber" invert={true} />
                     <StatusBar label="せいけつ" value={stats.clean} color="blue" />
                   </div>
-                  <div className="mt-1">
-                    <div className="w-full bg-gray-300 h-1.5 rounded-full overflow-hidden">
+                  <div className="mt-2">
+                    <div className="w-full bg-gray-300 h-2 rounded-full overflow-hidden">
                       <div className="bg-green-500 h-full transition-all duration-300" style={{ width: `${STAGES[stageIdx + 1] ? (stats.xp / STAGES[stageIdx + 1].requiredXp) * 100 : 100}%` }} />
                     </div>
                   </div>
                 </div>
 
-                {/* 水槽エリア */}
-                <div className="flex-1 relative flex items-center justify-center overflow-hidden bg-sky-200/50 border-4 border-blue-300 m-2 rounded-2xl shadow-inner min-h-0">
-                  {message && (
-                    <div className={`absolute top-2 px-3 py-1 rounded-2xl shadow-lg font-bold border-2 text-xs md:text-sm z-20 animate-[float_2s_ease-in-out_infinite] ${anim === 'angry' ? 'bg-red-100 border-red-400 text-red-800' : 'bg-white border-gray-200 text-gray-800'}`}>
-                      {message}
+                <div className="w-full flex-1 flex flex-col justify-center items-center p-3 md:p-5 min-h-0">
+                  <div className="w-full relative flex items-center justify-center overflow-hidden bg-sky-200/50 border-4 border-blue-300 rounded-3xl shadow-inner h-full max-h-[280px] md:max-h-[320px]">
+                    {message && (
+                      <div className={`absolute top-3 px-4 py-1.5 rounded-2xl shadow-lg font-bold border-2 text-xs md:text-sm z-20 animate-[float_2s_ease-in-out_infinite] ${anim === 'angry' ? 'bg-red-100 border-red-400 text-red-800' : 'bg-white border-gray-200 text-gray-800'}`}>
+                        {message}
+                      </div>
+                    )}
+                    <div className="z-10 w-full h-full max-w-[16rem] max-h-[16rem] flex items-center justify-center">
+                      <OtamajacksonSVG stageIdx={stageIdx} anim={anim} stats={stats} badCareCount={counts.badCare} />
                     </div>
-                  )}
-                  <div className="z-10 w-full h-full max-w-[14rem] max-h-[14rem] flex items-center justify-center">
-                    <OtamajacksonSVG stageIdx={stageIdx} anim={anim} stats={stats} badCareCount={counts.badCare} />
+                    {poops.map(p => (
+                      <div key={p.id} className="absolute text-3xl md:text-4xl animate-[sad-shake_2s_linear_infinite]" style={{ left: `${p.x}%`, top: `${p.y}%` }}>💩</div>
+                    ))}
+                    <div className="absolute bottom-0 w-full h-1/4 bg-blue-400/30 rounded-b-2xl pointer-events-none"></div>
                   </div>
-                  {poops.map(p => (
-                    <div key={p.id} className="absolute text-2xl md:text-3xl animate-[sad-shake_2s_linear_infinite]" style={{ left: `${p.x}%`, top: `${p.y}%` }}>💩</div>
-                  ))}
-                  <div className="absolute bottom-0 w-full h-1/4 bg-blue-400/30 rounded-b-xl pointer-events-none"></div>
                 </div>
 
-                {/* 操作パネル */}
-                <div className="bg-white p-2 rounded-t-2xl shadow-[0_-4px_10px_rgba(0,0,0,0.1)] z-10 flex-shrink-0 min-h-[140px] md:min-h-[160px]">
+                <div className="bg-white p-3 md:p-5 rounded-t-3xl shadow-[0_-4px_10px_rgba(0,0,0,0.1)] z-10 flex-shrink-0 min-h-[160px] md:min-h-[180px]">
                   {menu === 'main' && (
-                    <div className="grid grid-cols-3 gap-1.5 h-full">
-                      <button onClick={() => setMenu('food')} className="flex flex-col items-center justify-center bg-orange-100 border-2 border-orange-300 rounded-xl py-1 active:scale-95">
-                        <span className="text-xl md:text-2xl">🍚</span><span className="font-bold text-[10px] md:text-xs text-orange-800">ごはん</span>
+                    <div className="grid grid-cols-3 gap-2 md:gap-3 h-full">
+                      <button onClick={() => setMenu('food')} className="flex flex-col items-center justify-center bg-orange-100 border-2 border-orange-300 rounded-2xl py-2 md:py-3 active:scale-95">
+                        <span className="text-2xl md:text-3xl">🍚</span><span className="font-bold text-xs md:text-sm text-orange-800 mt-1">ごはん</span>
                       </button>
-                      <button onClick={cleanRoom} className="flex flex-col items-center justify-center bg-blue-100 border-2 border-blue-300 rounded-xl py-1 active:scale-95 relative">
-                        <span className="text-xl md:text-2xl">🧽</span><span className="font-bold text-[10px] md:text-xs text-blue-800">そうじ</span>
-                        {poops.length > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full animate-pulse">{poops.length}</span>}
+                      <button onClick={cleanRoom} className="flex flex-col items-center justify-center bg-blue-100 border-2 border-blue-300 rounded-2xl py-2 md:py-3 active:scale-95 relative">
+                        <span className="text-2xl md:text-3xl">🧽</span><span className="font-bold text-xs md:text-sm text-blue-800 mt-1">そうじ</span>
+                        {poops.length > 0 && <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-pulse">{poops.length}</span>}
                       </button>
-                      <button onClick={startMinigame} className="flex flex-col items-center justify-center bg-red-100 border-2 border-red-300 rounded-xl py-1 active:scale-95">
-                        <span className="text-xl md:text-2xl">🎮</span><span className="font-bold text-[10px] md:text-xs text-red-800">あそぶ</span>
+                      <button onClick={startMinigame} className="flex flex-col items-center justify-center bg-red-100 border-2 border-red-300 rounded-2xl py-2 md:py-3 active:scale-95">
+                        <span className="text-2xl md:text-3xl">🎮</span><span className="font-bold text-xs md:text-sm text-red-800 mt-1">あそぶ</span>
                       </button>
-                      <button onClick={rest} className="flex flex-col items-center justify-center bg-purple-100 border-2 border-purple-300 rounded-xl py-1 active:scale-95 col-span-1">
-                        <span className="text-xl md:text-2xl">💤</span><span className="font-bold text-[10px] md:text-xs text-purple-800">やすむ</span>
+                      <button onClick={rest} className="flex flex-col items-center justify-center bg-purple-100 border-2 border-purple-300 rounded-2xl py-2 md:py-3 active:scale-95 col-span-1">
+                        <span className="text-2xl md:text-3xl">💤</span><span className="font-bold text-xs md:text-sm text-purple-800 mt-1">やすむ</span>
                       </button>
-                      <button onClick={sing} className="flex flex-col items-center justify-center bg-pink-100 border-2 border-pink-300 rounded-xl py-1 active:scale-95 col-span-2">
-                        <span className="text-xl md:text-2xl">🎵</span><span className="font-bold text-[10px] md:text-xs text-pink-800">うたをうたう</span>
+                      <button onClick={sing} className="flex flex-col items-center justify-center bg-pink-100 border-2 border-pink-300 rounded-2xl py-2 md:py-3 active:scale-95 col-span-2">
+                        <span className="text-2xl md:text-3xl">🎵</span><span className="font-bold text-xs md:text-sm text-pink-800 mt-1">うたをうたう</span>
                       </button>
                     </div>
                   )}
@@ -565,13 +600,13 @@
                   {menu === 'food' && (
                     <div className="h-full flex flex-col">
                       <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-black text-xs md:text-sm text-orange-800">どれをあげる？</h3>
+                        <h3 className="font-black text-sm text-orange-800">どれをあげる？</h3>
                         <button onClick={() => setMenu('main')} className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold">もどる</button>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 h-full pb-1">
                         {FOODS.map(f => (
-                          <button key={f.id} onClick={() => feed(f)} className="flex-1 bg-orange-50 border border-orange-200 rounded-xl py-1 flex flex-col items-center active:bg-orange-200">
-                            <span className="text-xl md:text-2xl mb-0.5">{f.emoji}</span><span className="text-[9px] md:text-[10px] font-bold text-gray-800">{f.name}</span>
+                          <button key={f.id} onClick={() => feed(f)} className="flex-1 bg-orange-50 border border-orange-200 rounded-2xl py-2 flex flex-col items-center justify-center active:bg-orange-200">
+                            <span className="text-3xl mb-1">{f.emoji}</span><span className="text-xs md:text-sm font-bold text-gray-800">{f.name}</span>
                           </button>
                         ))}
                       </div>
@@ -583,16 +618,16 @@
 
             {phase === 'evolution' && (
               <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-yellow-200 to-yellow-500 z-50 absolute inset-0">
-                <div className="bg-white/95 p-6 rounded-3xl shadow-2xl text-center w-full border-4 border-yellow-400 animate-[pulse-fast_1s_ease-in-out_infinite]">
-                  <h2 className="text-2xl font-black text-yellow-600 mb-2">おめでとう！</h2>
-                  <div className="flex justify-center mb-4 h-32">
+                <div className="bg-white/95 p-6 md:p-8 rounded-3xl shadow-2xl text-center w-full max-w-md border-4 border-yellow-400 animate-[pulse-fast_1s_ease-in-out_infinite]">
+                  <h2 className="text-2xl md:text-3xl font-black text-yellow-600 mb-2">おめでとう！</h2>
+                  <div className="flex justify-center mb-4 h-32 md:h-40">
                     <OtamajacksonSVG stageIdx={stageIdx} anim="happy" stats={stats} badCareCount={counts.badCare} />
                   </div>
-                  <h3 className="text-xl font-black mb-2">「{STAGES[stageIdx].name}」に進化した！</h3>
-                  <p className="text-sm font-bold mb-6 text-gray-700 bg-yellow-50 p-2 rounded-lg">
+                  <h3 className="text-xl md:text-2xl font-black mb-3">「{STAGES[stageIdx].name}」に進化した！</h3>
+                  <p className="text-sm md:text-base font-bold mb-6 text-gray-700 bg-yellow-50 p-3 rounded-xl">
                     {STAGES[stageIdx].desc}
                   </p>
-                  <button onClick={() => setPhase('main')} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white text-lg font-black py-3 rounded-full shadow-[0_4px_0_#ca8a04] active:translate-y-[4px] active:shadow-none transition-all">
+                  <button onClick={() => setPhase('main')} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white text-xl font-black py-4 rounded-full shadow-[0_4px_0_#ca8a04] active:translate-y-[4px] active:shadow-none transition-all">
                     お世話にもどる
                   </button>
                 </div>
@@ -601,42 +636,42 @@
 
             {phase === 'minigame' && (
               <div className="flex-1 flex flex-col bg-pink-100 justify-center items-center p-4">
-                <div className="bg-white p-4 md:p-6 rounded-3xl shadow-xl w-full text-center border-4 border-pink-300 flex flex-col min-h-0">
-                  <h2 className="text-lg md:text-xl font-black text-pink-600 mb-2">
+                <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-md text-center border-4 border-pink-300 flex flex-col min-h-0">
+                  <h2 className="text-xl md:text-2xl font-black text-pink-600 mb-4">
                     {mgType === 'select' ? 'なにしてあそぶ？' : (mgType === 'janken' ? 'じゃんけん 勝負！' : 'あっち向いてホイ！')}
                   </h2>
                   
                   {mgState === 'start' && (
                     <>
-                      <div className="flex justify-center mb-2 flex-shrink-0 h-28">
+                      <div className="flex justify-center mb-4 flex-shrink-0 h-32">
                         <OtamajacksonSVG stageIdx={stageIdx} anim={stats.fatigue > 100 ? "sad" : "idle"} stats={stats} badCareCount={counts.badCare} />
                       </div>
                       
                       {mgType === 'select' ? (
-                        <div className="flex gap-2 justify-center">
-                          <button onClick={() => selectMinigame('janken')} className="flex-1 bg-pink-50 border-2 border-pink-200 rounded-xl py-3 px-2 font-bold active:bg-pink-200 text-sm">✊ じゃんけん</button>
-                          <button onClick={() => selectMinigame('ahoi')} className="flex-1 bg-purple-50 border-2 border-purple-200 rounded-xl py-3 px-2 font-bold active:bg-purple-200 text-sm">👆 あっち向いて</button>
+                        <div className="flex gap-3 justify-center">
+                          <button onClick={() => selectMinigame('janken')} className="flex-1 bg-pink-50 border-2 border-pink-200 rounded-2xl py-4 font-bold active:bg-pink-200 text-base">✊ じゃんけん</button>
+                          <button onClick={() => selectMinigame('ahoi')} className="flex-1 bg-purple-50 border-2 border-purple-200 rounded-2xl py-4 font-bold active:bg-purple-200 text-base">👆 あっち向いて</button>
                         </div>
                       ) : mgType === 'janken' ? (
-                        <div className="grid grid-cols-3 gap-2">
-                          {['✊', '✌️', '✋'].map(h => (<button key={h} onClick={() => playJanken(h)} className="text-3xl md:text-4xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95">{h}</button>))}
+                        <div className="grid grid-cols-3 gap-3">
+                          {['✊', '✌️', '✋'].map(h => (<button key={h} onClick={() => playJanken(h)} className="text-4xl bg-gray-100 py-4 rounded-2xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">{h}</button>))}
                         </div>
                       ) : (
-                        <div className="grid grid-cols-3 gap-1.5 max-w-[200px] mx-auto">
-                          <div/><button onClick={() => playAhoi('👆')} className="text-2xl md:text-3xl bg-gray-100 py-2 rounded-xl border-2 border-gray-300 active:scale-95">👆</button><div/>
-                          <button onClick={() => playAhoi('👈')} className="text-2xl md:text-3xl bg-gray-100 py-2 rounded-xl border-2 border-gray-300 active:scale-95">👈</button>
-                          <div className="flex items-center justify-center font-black text-gray-400 text-xs">顔</div>
-                          <button onClick={() => playAhoi('👉')} className="text-2xl md:text-3xl bg-gray-100 py-2 rounded-xl border-2 border-gray-300 active:scale-95">👉</button>
-                          <div/><button onClick={() => playAhoi('👇')} className="text-2xl md:text-3xl bg-gray-100 py-2 rounded-xl border-2 border-gray-300 active:scale-95">👇</button><div/>
+                        <div className="grid grid-cols-3 gap-2 max-w-[240px] mx-auto">
+                          <div/><button onClick={() => playAhoi('👆')} className="text-3xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">👆</button><div/>
+                          <button onClick={() => playAhoi('👈')} className="text-3xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">👈</button>
+                          <div className="flex items-center justify-center font-black text-gray-400 text-sm">顔</div>
+                          <button onClick={() => playAhoi('👉')} className="text-3xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">👉</button>
+                          <div/><button onClick={() => playAhoi('👇')} className="text-3xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">👇</button><div/>
                         </div>
                       )}
-                      <button onClick={() => setPhase('main')} className="mt-4 text-gray-500 font-bold text-xs underline">やめる</button>
+                      <button onClick={() => setPhase('main')} className="mt-6 text-gray-500 font-bold text-sm underline">やめる</button>
                     </>
                   )}
                   
                   {mgState === 'result' && (
                     <div className="animate-[pulse-fast_0.3s_ease-in-out]">
-                      <div className="flex justify-around items-center mb-6">
+                      <div className="flex justify-around items-center mb-8">
                         <div className="flex flex-col items-center"><span className="text-xs font-bold text-blue-600 mb-1">あなた</span><span className="text-4xl md:text-5xl bg-blue-100 p-3 rounded-full border-2 border-blue-300">{playerHand}</span></div>
                         <div className="text-xl font-black text-red-500">VS</div>
                         <div className="flex flex-col items-center"><span className="text-xs font-bold text-green-600 mb-1">オタマ</span><span className="text-4xl md:text-5xl bg-green-100 p-3 rounded-full border-2 border-green-300">{enemyHand}</span></div>
@@ -652,30 +687,34 @@
               </div>
             )}
 
+            {/* スクリーショット画面（ゲーム終了） */}
             {phase === 'result' && (
-              <div className={`flex-1 flex flex-col items-center justify-center p-6 z-50 absolute inset-0 ${stageIdx === 10 ? 'bg-black' : 'bg-gradient-to-t from-green-400 to-sky-300'}`}>
-                <div className={`bg-white/95 p-6 rounded-3xl shadow-2xl text-center w-full border-4 animate-[float_2s_ease-in-out_infinite] ${STAGES[stageIdx].borderColor || 'border-yellow-400'}`}>
-                  <h2 className={`text-2xl font-black mb-4 ${STAGES[stageIdx].textColor}`}>
-                    {stageIdx === 10 ? 'お別れの時…' : '最終進化！！'}
-                  </h2>
-                  <div className="flex justify-center mb-4 h-32">
-                     <OtamajacksonSVG stageIdx={stageIdx} anim="idle" stats={stats} badCareCount={counts.badCare} />
+              <div className={`flex-1 flex flex-col items-center justify-center p-4 md:p-6 z-50 absolute inset-0 ${stageIdx === 10 ? 'bg-black' : 'bg-gray-900'}`}>
+                
+                <h2 className="text-white font-black text-xl md:text-2xl mb-4 animate-pulse drop-shadow-md">📸 記念スクショタイム 📸</h2>
+                
+                {/* スクショ対象の枠 */}
+                <div className="relative bg-white/95 p-6 md:p-8 rounded-3xl shadow-2xl text-center w-full max-w-sm mb-6">
+                  {/* 装飾コンポーネント（ランクで変化） */}
+                  <ScreenshotDecoration rank={STAGES[stageIdx].rank} />
+                  
+                  <div className="relative z-10">
+                    <h2 className={`text-xl md:text-2xl font-black mb-4 ${STAGES[stageIdx].textColor}`}>
+                      {stageIdx === 10 ? 'お別れの時…' : '最終進化完了！！'}
+                    </h2>
+                    <div className="flex justify-center mb-6 h-32 md:h-40">
+                       <OtamajacksonSVG stageIdx={stageIdx} anim="idle" stats={stats} badCareCount={counts.badCare} />
+                    </div>
+                    <h3 className={`text-3xl md:text-4xl font-black mb-3 ${STAGES[stageIdx].textColor}`}>{STAGES[stageIdx].name}</h3>
+                    <p className="text-sm md:text-base font-bold p-4 rounded-xl bg-white/80 text-gray-800 leading-relaxed border-2 border-gray-200 shadow-sm">
+                      {STAGES[stageIdx].desc}
+                    </p>
                   </div>
-                  <h3 className={`text-2xl md:text-3xl font-black mb-2 ${STAGES[stageIdx].textColor}`}>{STAGES[stageIdx].name}</h3>
-                  <p className="text-xs md:text-sm font-bold mb-6 p-3 rounded-xl bg-gray-100 text-gray-800">
-                    {STAGES[stageIdx].desc}
-                  </p>
-                  <button onClick={resetGame} className="w-full bg-blue-500 hover:bg-blue-600 text-white text-lg font-black py-3 rounded-full shadow-[0_4px_0_#1e3a8a] active:translate-y-[4px] active:shadow-none transition-all">
-                    もう一度育てる
-                  </button>
                 </div>
                 
-                {stageIdx === 10 && (
-                  <div className="absolute inset-0 pointer-events-none opacity-50">
-                     <div className="absolute top-10 left-10 text-white text-2xl animate-pulse">✨</div>
-                     <div className="absolute top-40 right-20 text-white text-xl animate-pulse" style={{animationDelay: '0.5s'}}>✨</div>
-                  </div>
-                )}
+                <button onClick={resetGame} className="w-full max-w-sm bg-blue-500 hover:bg-blue-600 text-white text-lg font-black py-3 rounded-full shadow-[0_4px_0_#1e3a8a] active:translate-y-[4px] active:shadow-none transition-all">
+                  最初からやり直す
+                </button>
               </div>
             )}
           </div>
