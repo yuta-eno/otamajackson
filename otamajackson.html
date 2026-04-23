@@ -22,13 +22,13 @@
       { id: 2, name: '四本足！', requiredXp: 350, desc: '前足も生えてカエルに近づいた！' },
       { id: 3, name: 'しっぽカエル', requiredXp: 600, desc: '顔がカエルになってきた！' },
       // --- 最終形態（7パターン） rankでスクショの装飾が変わる ---
-      { id: 4, name: '立派なカエル', desc: '王道！完璧な育成の証。', textColor: 'text-green-600', rank: 'good' },
-      { id: 5, name: 'ツッパリガエル', desc: 'お世話サボりでグレちゃった…', textColor: 'text-purple-600', rank: 'bad' },
-      { id: 6, name: 'デブガエル', desc: '無理やり食べ過ぎてまん丸に！', textColor: 'text-orange-600', rank: 'bad' },
-      { id: 7, name: 'マッチョガエル', desc: '疲労限界まで遊んだ結果、超ムキムキに！', textColor: 'text-red-600', rank: 'good' },
-      { id: 8, name: '仙人ガエル', desc: '寝てばかりで悟りを開いた。', textColor: 'text-gray-600', rank: 'normal' },
-      { id: 9, name: 'アイドルガエル', desc: '歌の力で目覚めたスター！', textColor: 'text-pink-500', rank: 'good' },
-      { id: 10, name: '宇宙ガエル', desc: '故郷の星へ帰っていった…', textColor: 'text-blue-500', rank: 'good' },
+      { id: 4, name: '立派なカエル', requiredXp: 1000, desc: '王道！完璧な育成の証。', textColor: 'text-green-600', rank: 'good' },
+      { id: 5, name: 'ツッパリガエル', requiredXp: 1000, desc: 'お世話サボりでグレちゃった…', textColor: 'text-purple-600', rank: 'bad' },
+      { id: 6, name: 'デブガエル', requiredXp: 1000, desc: '無理やり食べ過ぎてまん丸に！', textColor: 'text-orange-600', rank: 'bad' },
+      { id: 7, name: 'マッチョガエル', requiredXp: 1000, desc: '疲労限界まで遊んだ結果、超ムキムキに！', textColor: 'text-red-600', rank: 'good' },
+      { id: 8, name: '仙人ガエル', requiredXp: 1000, desc: '寝てばかりで悟りを開いた。', textColor: 'text-gray-600', rank: 'normal' },
+      { id: 9, name: 'アイドルガエル', requiredXp: 1000, desc: '歌の力で目覚めたスター！', textColor: 'text-pink-500', rank: 'good' },
+      { id: 10, name: '宇宙ガエル', requiredXp: 1000, desc: '故郷の星へ帰っていった…', textColor: 'text-blue-500', rank: 'good' },
     ];
 
     const FOODS = [
@@ -643,40 +643,40 @@
                   
                   {mgState === 'start' && (
                     <>
-                      <div className="flex justify-center mb-4 flex-shrink-0 h-32">
+                      <div className="flex justify-center mb-6 flex-shrink-0 h-32">
                         <OtamajacksonSVG stageIdx={stageIdx} anim={stats.fatigue > 100 ? "sad" : "idle"} stats={stats} badCareCount={counts.badCare} />
                       </div>
                       
                       {mgType === 'select' ? (
-                        <div className="flex gap-3 justify-center">
-                          <button onClick={() => selectMinigame('janken')} className="flex-1 bg-pink-50 border-2 border-pink-200 rounded-2xl py-4 font-bold active:bg-pink-200 text-base">✊ じゃんけん</button>
-                          <button onClick={() => selectMinigame('ahoi')} className="flex-1 bg-purple-50 border-2 border-purple-200 rounded-2xl py-4 font-bold active:bg-purple-200 text-base">👆 あっち向いて</button>
+                        <div className="flex gap-4 justify-center">
+                          <button onClick={() => selectMinigame('janken')} className="flex-1 bg-pink-50 border-4 border-pink-200 rounded-3xl py-8 font-black active:bg-pink-200 text-2xl shadow-md">✊ じゃんけん</button>
+                          <button onClick={() => selectMinigame('ahoi')} className="flex-1 bg-purple-50 border-4 border-purple-200 rounded-3xl py-8 font-black active:bg-purple-200 text-2xl shadow-md">👆 あっち向いて</button>
                         </div>
                       ) : mgType === 'janken' ? (
-                        <div className="grid grid-cols-3 gap-3">
-                          {['✊', '✌️', '✋'].map(h => (<button key={h} onClick={() => playJanken(h)} className="text-4xl bg-gray-100 py-4 rounded-2xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">{h}</button>))}
+                        <div className="grid grid-cols-3 gap-4">
+                          {['✊', '✌️', '✋'].map(h => (<button key={h} onClick={() => playJanken(h)} className="text-6xl md:text-7xl bg-white py-6 rounded-3xl border-4 border-gray-300 active:scale-95 hover:bg-pink-50 shadow-md">{h}</button>))}
                         </div>
                       ) : (
-                        <div className="grid grid-cols-3 gap-2 max-w-[240px] mx-auto">
-                          <div/><button onClick={() => playAhoi('👆')} className="text-3xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">👆</button><div/>
-                          <button onClick={() => playAhoi('👈')} className="text-3xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">👈</button>
-                          <div className="flex items-center justify-center font-black text-gray-400 text-sm">顔</div>
-                          <button onClick={() => playAhoi('👉')} className="text-3xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">👉</button>
-                          <div/><button onClick={() => playAhoi('👇')} className="text-3xl bg-gray-100 py-3 rounded-xl border-2 border-gray-300 active:scale-95 hover:bg-gray-200">👇</button><div/>
+                        <div className="grid grid-cols-3 gap-3 max-w-[320px] mx-auto">
+                          <div/><button onClick={() => playAhoi('👆')} className="text-5xl md:text-6xl bg-white py-5 rounded-3xl border-4 border-gray-300 active:scale-95 hover:bg-purple-50 shadow-md">👆</button><div/>
+                          <button onClick={() => playAhoi('👈')} className="text-5xl md:text-6xl bg-white py-5 rounded-3xl border-4 border-gray-300 active:scale-95 hover:bg-purple-50 shadow-md">👈</button>
+                          <div className="flex items-center justify-center font-black text-gray-400 text-lg">顔</div>
+                          <button onClick={() => playAhoi('👉')} className="text-5xl md:text-6xl bg-white py-5 rounded-3xl border-4 border-gray-300 active:scale-95 hover:bg-purple-50 shadow-md">👉</button>
+                          <div/><button onClick={() => playAhoi('👇')} className="text-5xl md:text-6xl bg-white py-5 rounded-3xl border-4 border-gray-300 active:scale-95 hover:bg-purple-50 shadow-md">👇</button><div/>
                         </div>
                       )}
-                      <button onClick={() => setPhase('main')} className="mt-6 text-gray-500 font-bold text-sm underline">やめる</button>
+                      <button onClick={() => setPhase('main')} className="mt-8 text-gray-500 font-bold text-base underline p-4">やめる</button>
                     </>
                   )}
                   
                   {mgState === 'result' && (
                     <div className="animate-[pulse-fast_0.3s_ease-in-out]">
                       <div className="flex justify-around items-center mb-8">
-                        <div className="flex flex-col items-center"><span className="text-xs font-bold text-blue-600 mb-1">あなた</span><span className="text-4xl md:text-5xl bg-blue-100 p-3 rounded-full border-2 border-blue-300">{playerHand}</span></div>
-                        <div className="text-xl font-black text-red-500">VS</div>
-                        <div className="flex flex-col items-center"><span className="text-xs font-bold text-green-600 mb-1">オタマ</span><span className="text-4xl md:text-5xl bg-green-100 p-3 rounded-full border-2 border-green-300">{enemyHand}</span></div>
+                        <div className="flex flex-col items-center"><span className="text-sm font-bold text-blue-600 mb-1">あなた</span><span className="text-5xl md:text-6xl bg-blue-100 p-4 rounded-full border-4 border-blue-300 shadow-md">{playerHand}</span></div>
+                        <div className="text-2xl font-black text-red-500">VS</div>
+                        <div className="flex flex-col items-center"><span className="text-sm font-bold text-green-600 mb-1">オタマ</span><span className="text-5xl md:text-6xl bg-green-100 p-4 rounded-full border-4 border-green-300 shadow-md">{enemyHand}</span></div>
                       </div>
-                      <div className="text-xl md:text-2xl font-black mb-2">
+                      <div className="text-2xl md:text-3xl font-black mb-2">
                         {mgResult === 'win' && <span className="text-red-500">きみの勝ち！🎉</span>}
                         {mgResult === 'lose' && <span className="text-blue-500">きみの負け…💧</span>}
                         {mgResult === 'draw' && <span className="text-gray-600">あいこ！</span>}
