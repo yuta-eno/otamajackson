@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -5,21 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>オタマジャクソン育成ゲーム</title>
   
-  <!-- React と ReactDOM の読み込み -->
-  <script crossorigin src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
-  <script crossorigin src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
-  
-  <!-- ブラウザ上でJSXを変換するためのBabel -->
-  <script src="[https://unpkg.com/@babel/standalone/babel.min.js](https://unpkg.com/@babel/standalone/babel.min.js)"></script>
-  
-  <!-- デザインを整えるTailwind CSS -->
-  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+  <!-- プログラムの読み込み部分を修正しました！ -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-sky-100 overscroll-none touch-none">
   <!-- ゲームが表示される場所 -->
   <div id="root"></div>
 
-  <!-- ここからゲームのプログラム -->
   <script type="text/babel">
     const { useState, useEffect } = React;
 
@@ -362,6 +358,8 @@
         }
       };
 
+```
+```html
       const resetGame = () => {
         setStats({ full: 100, mood: 100, clean: 100, xp: 0 });
         setStageIdx(0);
@@ -379,7 +377,8 @@
           </div>
         </div>
       );
-            return (
+
+      return (
         <div className="min-h-screen bg-sky-100 flex flex-col font-sans no-select relative overflow-hidden max-w-lg mx-auto shadow-2xl">
           <style>{styles}</style>
 
@@ -604,4 +603,5 @@
 </body>
 </html>
 
+```
 
